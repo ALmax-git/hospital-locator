@@ -41,4 +41,4 @@ The system allows users to:
 
 1. **Clone the repository**:
    ```bash
-   git clone https://github.com/your-username/hospital-locator.git
+   git clone https://github.com/ALmax-git/hospital-locator.git
