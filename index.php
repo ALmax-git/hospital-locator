@@ -73,7 +73,7 @@
         <script>
         document.addEventListener("DOMContentLoaded", () => {
             // Initialize the map centered at Maiduguri
-            var map = L.map('map').setView([12.6729, 13.6160], 12);
+            var map = L.map('map').setView([11.8369, 13.1334], 12);
 
             // Set up the Esri satellite tile layer
             L.tileLayer(

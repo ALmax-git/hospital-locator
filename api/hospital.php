@@ -17,7 +17,7 @@ try {
     die("Database connection error: " . $e->getMessage());
 }
 
-$sql = "SELECT * FROM Hospital"; // Make sure the table name is correct
+$sql = "SELECT * FROM Hospital"; 
 $result = $conn->query($sql);
 
 if ($result === false) {
