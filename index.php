@@ -1,180 +1,226 @@
 <!DOCTYPE html>
 <html lang="en">
+<?php
 
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Hospital Locator</title>
-        <link rel="stylesheet" href="assets/css/style.css">
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.js"></script>
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.css" />
-        <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-        }
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 
-        nav {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background-color: #007bff;
-            color: white;
-            padding: 10px 20px;
-        }
+?>
 
-        nav input {
-            padding: 10px;
-            border: none;
-            border-radius: 4px;
-            width: 250px;
-        }
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <title>Hospital Locator</title>
+  <meta name="description" content="">
+  <meta name="keywords" content="">
 
-        nav button {
-            padding: 10px 15px;
-            border: none;
-            border-radius: 4px;
-            background-color: white;
-            color: #007bff;
-            cursor: pointer;
-            margin-left: 10px;
-        }
+  <!-- Favicons -->
+  <link href="assets/img/favicon.png" rel="icon">
+  <link href="assets/img/apple-touch-icon.png" rel="apple-touch-icon">
 
-        nav button:hover {
-            background-color: #e9ecef;
-        }
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com" rel="preconnect">
+  <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
 
-        #map {
-            height: 400px;
-            /* Increased height for better visibility */
-        }
-        </style>
-    </head>
+  <!-- Vendor CSS Files -->
+  <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+  <link href="assets/vendor/aos/aos.css" rel="stylesheet">
+  <link href="assets/vendor/glightbox/css/glightbox.min.css" rel="stylesheet">
+  <link href="assets/vendor/swiper/swiper-bundle.min.css" rel="stylesheet">
 
-    <body>
-        <!-- Navigation -->
-        <nav>
-            <div>
-                <input type="text" id="location-input" placeholder="Search for a hospital...">
-                <button id="search-button">Search</button>
-            </div>
-            <div>
-                <button id="profile-button">Profile</button>
-            </div>
+  <!-- Main CSS File -->
+  <link href="assets/css/main.css" rel="stylesheet">
+
+</head>
+
+<body class="index-page">
+
+  <header id="header" class="header sticky-top">
+
+
+
+    <div class="branding d-flex align-items-cente">
+
+      <div class="container position-relative d-flex align-items-center justify-content-between">
+        <a href="index.html" class="logo d-flex align-items-center">
+          <h1 class="sitename">Hospital Locator</h1>
+        </a>
+
+        <nav id="navmenu" class="navmenu">
+          <ul>
+            <li><a href="./" class="<?php echo isset($_GET['web']) && $_GET['web'] == '' ? 'active' : '';?>">Home</a></li>
+            <li><a class="<?php echo isset($_GET['web']) && $_GET['web'] == 'about' ? 'active' : '';?>" href="./?web=about">About</a></li>
+            <li><a class="<?php echo isset($_GET['web']) && $_GET['web'] == 'hospitals' ? 'active' : '';?>" href="./?web=hospitals">Hospitals</a></li>
+            <li><a class="<?php echo isset($_GET['web']) && $_GET['web'] == 'team' ? 'active' : '';?>" href="./?web=team">Team</a></li>
+
+            <li><a class="<?php echo isset($_GET['web']) && $_GET['web'] == 'contact' ? 'active' : '';?>" href="./?web=contact">Contact</a></li>
+          </ul>
+          <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
         </nav>
 
-        <!-- Map -->
-        <div id="map"></div>
+      </div>
 
-        <!-- Scripts -->
-        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-        <script>
-        document.addEventListener("DOMContentLoaded", () => {
-            // Initialize the map centered at Maiduguri
-            var map = L.map('map').setView([11.8369, 13.1334], 12);
+    </div>
 
-            // Set up the Esri satellite tile layer
-            L.tileLayer(
-                'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-                    attribution: 'Tiles © Esri'
-                }).addTo(map);
+  </header>
 
-            // Fetch hospitals from the server-side (update this if needed)
-            fetch('api/hospital.php')
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    if (!data.success) {
-                        throw new Error(data.message || 'Failed to fetch hospitals.');
-                    }
+  <main class="main">
 
-                    // Now hospitals are in data.hospitals
-                    data.hospitals.forEach(hospital => {
-                        L.marker([hospital.latitude, hospital.longitude]).addTo(map)
-                            .bindPopup(
-                                `<b>${hospital.name}</b><br />Coordinates: (${hospital.latitude}, ${hospital.longitude})`
-                            );
-                    });
-                })
-                .catch(error => {
-                    console.error('Error fetching hospitals:', error);
-                    Swal.fire({
-                        title: 'Error',
-                        text: 'An error occurred while fetching hospitals. Please check your API endpoint and try again later.',
-                        icon: 'error',
-                        confirmButtonText: 'Ok'
-                    });
-                });
-        });
+    <!-- Hero Section -->
+    <section id="hero" class="hero section light-background">
 
-        // Search button click handler
-        // Declare the markers array globally
-        let markers = []; // Initialize markers as an empty array
+      <div class="container">
+        <div class="row gy-4">
+          <div class="col-lg-6 order-2 order-lg-1 d-flex flex-column justify-content-center" data-aos="zoom-out">
 
-        document.getElementById('search-button').addEventListener('click', function() {
-            const locationInput = document.getElementById('location-input').value.trim();
+            <?php if(!isset($_GET['web'])): ?>
+              <h1>Welcome to <span>Hospital Locator</span></h1>
+              <p>Find The nearest Hospital in Maiduguri with ease.</p>
+              <div class="d-flex">
+                <a href="#about" class="btn-get-started">Get Started</a>
+              </div>
+            <?php else: ?>
+                <?php if($_GET['web'] == 'hospitals'): ?>
+                  <div>
+                      <input type="text" id="location-input" class="form-control" placeholder="Search for a hospital...">
+                      <br>
+                      <button id="search-button" class="form-control">Search</button>
+                  </div>
+                <?php endif; ?>
+            <?php endif; ?>
+          </div>
+          <div class="col-lg-6 order-2 order-lg-1 d-flex flex-column justify-content-center" data-aos="zoom-out">
+            <div id="carouselExample"  class="carousel slide" data-bs-ride="carousel">
+              <div class="carousel-inner">
+                <div class="carousel-item active">
+                  <img src="assets/img/clients/img-1.jpg" class="d-block w-100" alt="...">
+                </div>
+                <div class="carousel-item">
+                  <img src="assets/img/clients/img-2.jpg" class="d-block w-100" alt="...">
+                </div>
+                <div class="carousel-item">
+                  <img src="assets/img/clients/img-3.jpg" class="d-block w-100" alt="...">
+                </div>
+                <div class="carousel-item">
+                  <img src="assets/img/clients/img-4.jpg" class="d-block w-100" alt="...">
+                </div>
+              </div>
+              <button class="carousel-control-prev" type="button" data-bs-target="#carouselExample" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Previous</span>
+              </button>
+              <button class="carousel-control-next" type="button" data-bs-target="#carouselExample" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Next</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
 
-            if (!locationInput) {
-                Swal.fire('Warning', 'Please enter a location to search.', 'warning');
-                return;
-            }
+    </section>
 
-            console.log('Searching for location:', locationInput); // Log the input to ensure it's correct
+      <?php
+      if (isset($_GET['web'])) {
+          switch ($_GET['web']) {
+              case "about":
+                  include "about.php";
+                  break;
+              case "contact":
+                  include "contact.php";
+                  break;
+              case "hospitals":
+                  include "map.php";
+                  break;
+              case "team":
+                  include "team.php";
+                  include "statistic.php";
+                  break;
+              default:
+                  include "about.php";
+                  include "statistic.php";
+                  break;
+          }
+      }else{
+          include "statistic.php";
+          include "about.php";
+      }
+      ?>
 
-            fetch(`api/geocode.php?location=${encodeURIComponent(locationInput)}`)
-                .then(response => {
-                    console.log('Response received:', response); // Log the full response for debugging
-                    if (!response.ok) {
-                        throw new Error(
-                            `Network response was not ok: ${response.status} - ${response.statusText}`);
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    console.log('Data received:', data); // Log the received data for debugging
 
-                    // Check if the response indicates success
-                    if (data.success) {
-                        // Extract hospital information
-                        const {
-                            latitude,
-                            longitude,
-                            name,
-                            address
-                        } = data.hospital;
 
-                        // Convert latitude and longitude to floats
-                        const lat = parseFloat(latitude);
-                        const lon = parseFloat(longitude);
+  </main>
 
-                        // Check if latitude and longitude are valid numbers
-                        if (!isNaN(lat) && !isNaN(lon)) {
-                            Swal.fire('Success', 'Location found', 'success');
-                        } else {
-                            console.error('Invalid latitude or longitude:', latitude, longitude);
-                            Swal.fire('Error', 'Invalid location coordinates.', 'error');
-                        }
-                    } else {
-                        const errorMessage = 'No results found for this location.';
-                        console.error('Error in data response:', errorMessage); // Log error details
-                        Swal.fire('Error', errorMessage, 'error');
-                    }
-                })
-                .catch(error => {
-                    console.error('Fetch error:', error); // Log full error details for better debugging
-                    Swal.fire('Error', 'An error occurred while fetching the location. Please try again.',
-                        'error');
-                });
-        });
+  <footer id="footer" class="footer">
 
-        //
-        </script>
-    </body>
+
+
+    <div class="container footer-top">
+      <div class="row gy-4">
+        <div class="col-lg-4 col-md-6 footer-about">
+          <a href="index.html" class="d-flex align-items-center">
+            <span class="sitename">Hospital Locator</span>
+          </a>
+          <div class="footer-contact pt-3">
+            <p>Maiduguri, Borno State</p>
+            <p>Ramat Polytechnic, 606282</p>
+            <p class="mt-3"><strong>Phone:</strong> <span>+234 81 6514 1519</span></p>
+            <p><strong>Email:</strong> <span>alimustaphashettima@gmail.com</span></p>
+          </div>
+        </div>
+
+
+        <div class="col-lg-4 col-md-12">
+          <h4>Follow Us</h4>
+          <div class="social-links d-flex">
+            <a href=""><i class="bi bi-twitter-x"></i></a>
+            <a href=""><i class="bi bi-facebook"></i></a>
+            <a href=""><i class="bi bi-instagram"></i></a>
+            <a href=""><i class="bi bi-linkedin"></i></a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="container copyright text-center mt-4">
+      <p>© <span>Copyright</span> <strong class="px-1 sitename">Hospital Locator</strong> <span>All Rights Reserved</span></p>
+      <div class="credits">
+        Designed by <a href="https://github.com/ALmax-git">ALmax</a>
+      </div>
+    </div>
+
+  </footer>
+
+  <!-- Scroll Top -->
+  <a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+
+  <!-- Preloader -->
+  <div id="preloader">
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+  </div>
+
+    <?php if(isset($_GET['web']) && $_GET['web'] == 'hospitals'){include 'script.php';} ?>
+
+  <!-- Vendor JS Files -->
+  <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="assets/vendor/php-email-form/validate.js"></script>
+  <script src="assets/vendor/aos/aos.js"></script>
+  <script src="assets/vendor/glightbox/js/glightbox.min.js"></script>
+  <script src="assets/vendor/waypoints/noframework.waypoints.js"></script>
+  <script src="assets/vendor/purecounter/purecounter_vanilla.js"></script>
+  <script src="assets/vendor/swiper/swiper-bundle.min.js"></script>
+  <script src="assets/vendor/imagesloaded/imagesloaded.pkgd.min.js"></script>
+  <script src="assets/vendor/isotope-layout/isotope.pkgd.min.js"></script>
+
+  <!-- Main JS File -->
+  <script src="assets/js/main.js"></script>
+
+</body>
 
 </html>
