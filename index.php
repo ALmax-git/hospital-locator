@@ -52,16 +52,15 @@ error_reporting(E_ALL);
           <ul>
             <li><a href="./" class="<?php echo isset($_GET['web']) && $_GET['web'] == '' ? 'active' : ''; ?>">Home</a></li>
             <div class="dropdown">
-              <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                Dropdown
+              <button class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                Hospitals
               </button>
-              <ul class="dropdown-menu dropdown-menu-dark">
-                <li><a class="dropdown-item active" href="#">Action</a></li>
+              <ul class="dropdown-menu dropdown-menu-light">
+                <li><a class="dropdown-item <?php echo isset($_GET['web']) && $_GET['web'] == 'hospitals' ? 'active' : ''; ?>" href="./?web=hospitals">Search</a></li>
                 <li><hr class="dropdown-divider"></li>
-                <li><a class="dropdown-item" href="#">Separated link</a></li>
+                <li><a class="dropdown-item <?php echo isset($_GET['web']) && $_GET['web'] == 'search' ? 'active' : ''; ?>" href="./?web=search">Locations</a></li>
               </ul>
             </div>
-            <li><a class="<?php echo isset($_GET['web']) && $_GET['web'] == 'hospitals' ? 'active' : ''; ?>" href="./?web=hospitals">Hospitals</a></li>
             <li><a class="<?php echo isset($_GET['web']) && $_GET['web'] == 'about' ? 'active' : ''; ?>" href="./?web=about">About</a></li>
             <li><a class="<?php echo isset($_GET['web']) && $_GET['web'] == 'team' ? 'active' : ''; ?>" href="./?web=team">Team</a></li>
 
@@ -143,6 +142,11 @@ error_reporting(E_ALL);
           break;
         case "hospitals":
           include "map.php";
+          echo'<script>let search_by = "name";</script>';
+          break;
+        case "search":
+          include "map.php";
+          echo'<script>let search_by = "location";</script>';
           break;
         case "team":
           include "team.php";
